@@ -9,26 +9,18 @@
   #define DEVICE "ESP8266"
 #endif
 
-//Luft dht11
-#include "DHT.h"
-#define DHT_TYPE DHT11
-
-//Feuchtigkeitssensor
-const int analogPin = A0; //Analog Pin vom ESP
-int e = 0;
+// WiFi AP SSID
+#define WIFI_SSID "WLAN NAME"
+// WiFi password
+#define WIFI_PASSWORD "WLAN PASSWORT"
 
 #include <InfluxDbClient.h>
 #include <InfluxDbCloud.h>
 
-// WiFi AP SSID
-#define WIFI_SSID "Connect for Identity Theft"       //WICHTIG CHANGEN !!!!
-// WiFi password
-#define WIFI_PASSWORD "#KG7P@53!>b"   
-
 #define INFLUXDB_URL "https://eu-central-1-1.aws.cloud2.influxdata.com"
-#define INFLUXDB_TOKEN "q3DGgs--tBBWM006JA7I3rha7fCSXKUwtflVmrG-x4TtPD-knBP4EbKOPH9CTT8kGwwsDzXyFjlMfG6VyxhQyw=="
-#define INFLUXDB_ORG "9ed6fb73f20651fe"
-#define INFLUXDB_BUCKET "AndroidDB"
+#define INFLUXDB_TOKEN "token"
+#define INFLUXDB_ORG "org"
+#define INFLUXDB_BUCKET "bucket"
 
 // Time zone info
 #define TZ_INFO "UTC2"
@@ -42,8 +34,14 @@ Point humidity("humidity");
 Point soil_moisture("soil_moisture");
 
 //Luft DHT11
+#include "DHT.h"
+#define DHT_TYPE DHT11
 const int DHT_PIN = 5;
 DHT dht(DHT_PIN, DHT_TYPE);
+
+//Feuchtigkeitssensor
+const int analogPin = A0; //Analog Pin vom ESP
+int e = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -88,26 +86,15 @@ void loop() {
   float t = dht.readTemperature();
   //Erd-Feuchtigkeit
   int e = analogRead(analogPin);
-  
-  Serial.print("Temperatur: ");
-  Serial.print(t);
-  Serial.print("&deg;C, Luftfeuchtigkeit: ");
-  Serial.print(h);
-  Serial.println("%");
-  
+
   // Clear fields for reusing the points
   temperature.clearFields();
   humidity.clearFields();
   soil_moisture.clearFields();
 
-  // Simulate sensor readings (replace with actual sensor readings later)
-  //int temp = random(20, 30); // Random temperature between 20°C and 30°C
-  //int hum = random(40, 60);  // Random humidity between 40% and 60%
-  //int soil = random(1, 10);  // Random soil moisture between 1 and 10
-
-  int temp =  (int)t; // Random temperature between 20°C and 30°C
-  int hum =   (int)h;  // Random humidity between 40% and 60%
-  int soil =       e;  // Random soil moisture between 1 and 10
+  int temp =  (int)t;
+  int hum =   (int)h;
+  int soil =       e;
 
   // Add sensor data to points
   temperature.addField("value", temp);
